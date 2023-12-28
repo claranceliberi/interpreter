@@ -74,6 +74,7 @@ func newToken(tokenType token.TokenType, ch byte) token.Token {
 	return token.Token{Type: tokenType, Literal: string(ch)}
 }
 
+// reads the input until it encounters a non-letter-character, and returns the substring
 func (l *Lexer) readIdentifier() string {
 	position := l.position
 
@@ -84,6 +85,8 @@ func (l *Lexer) readIdentifier() string {
 	return l.input[position:l.position]
 }
 
+// reads the input until it encounters a non-digit-character, and returns the substring
+// TODO: support floating point numbers and other number types
 func (l *Lexer) readNumber() string {
 	position := l.position
 
@@ -100,6 +103,8 @@ func (l *Lexer) skipWhitespace() {
 	}
 }
 
+// TODO: support other characters
+// up to now only variables with _ and letters are supported ie. 
 func isLetter(ch byte) bool {
 	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
 }
