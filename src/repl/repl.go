@@ -3,23 +3,20 @@ package repl
 import (
 	"bufio"
 	"fmt"
-	"go/token"
 	"io"
-
-	"github.com/claranceliberi/monkey-interpreter/waiig_code_1.3/01/src/monkey/lexer"
+	"github.com/claranceliberi/monkey-interpreter/src/lexer"
+	"github.com/claranceliberi/monkey-interpreter/src/token"
 )
-
-
 
 const PROMPT = ">> "
 
-func Start(in io.Reader, out io.Writer){
+func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 
 	for {
-		fmt.Printf(PROMPT)
+		fmt.Print(PROMPT)
 		scanned := scanner.Scan()
-		if(!scanned){
+		if !scanned {
 			return
 		}
 
@@ -27,8 +24,9 @@ func Start(in io.Reader, out io.Writer){
 
 		l := lexer.New(line)
 
-		for tok := l.NextToken(); tok.Type != token.EOF; tok = tok.NextToken(){
+		for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
 			fmt.Printf("%+v\n", tok)
 		}
+
 	}
 }
