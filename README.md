@@ -8,3 +8,5 @@ interpreter for monkey programming language
 
 bellow is a picture that shows above phases:
 ![Compiler Phases](/assets/lexical_analysis.png)
+
+- **REPL**: Read Eval Print Loop, is a simple interactive computer programming environment that takes single user inputs (i.e. single expressions), evaluates them, and returns the result to the user; a program written in a REPL environment is executed piecewise. (this is usually called console)
