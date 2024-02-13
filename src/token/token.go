@@ -1,9 +1,9 @@
 package token;
 
-
+type TokenType string;
 
 type Token struct {
-	Type string  // helps to distinguish INTEGER,STRING,RIGHT_BRACES or other supported token types
+	Type TokenType  // helps to distinguish INTEGER,STRING,RIGHT_BRACES or other supported token types
 	Literal string // holds the token value, if INTEGER, will be any number, if RIGHT_BRACES literal will be '}'
 }
 

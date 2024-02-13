@@ -1,0 +1,10 @@
+p14
+
+left the codebase with an logical error,
+
+when lexer_tests in TestNextToken are run, initially the lexer starts from the second token
+instead of the first token
+
+why? because the lexer is initialized with the first token in the constructor and the NextToken method is called in loop before running tests
+
+Fix: not yet determined
