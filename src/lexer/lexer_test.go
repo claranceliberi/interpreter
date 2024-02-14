@@ -23,19 +23,20 @@ func TestNextToken(t *testing.T) {
 		{token.RBRACE, "}"},
 		{token.COMMA, ","},
 		{token.SEMICOLON, ";"},
+		{token.EOF, ""},
 	}
 
 	_lexer := New(input)
 
 	for i, expectedToken := range tests {
-		token := _lexer.NextToken();
+		token := _lexer.NextToken()
 
 		if token.Type != expectedToken.expectedType {
 			t.Fatalf("tests [%d] - tokentype wrong. expected=%q, got=%q", i, expectedToken.expectedType, token.Type)
 		}
 
 		if token.Literal != expectedToken.expectedLiteral {
-			t.Fatalf("tests [%d] - literal wrong. expected=%q, got=%q", i, expectedToken.expectedLiteral, token.Literal )
+			t.Fatalf("tests [%d] - literal wrong. expected=%q, got=%q", i, expectedToken.expectedLiteral, token.Literal)
 		}
 	}
 
