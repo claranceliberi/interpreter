@@ -1,6 +1,7 @@
 package lexer
 
 import (
+	"log"
 	"testing"
 
 	"github.com/claranceliberi/monkey-interpreter/src/token"
@@ -58,9 +59,14 @@ func TestNextToken(t *testing.T) {
 		{token.SEMICOLON, ";"},
 	}
 
+	log.Println("------------")
+
 	_lexer := New(input)
 
 	for i, expectedToken := range tests {
+		log.Printf("test %v,", i)
+		log.Println()
+
 		token := _lexer.NextToken()
 
 		if token.Type != expectedToken.expectedType {

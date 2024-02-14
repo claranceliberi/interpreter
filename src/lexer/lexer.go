@@ -1,6 +1,7 @@
 package lexer
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/claranceliberi/monkey-interpreter/src/token"
@@ -14,6 +15,7 @@ type Lexer struct {
 }
 
 func New(input string) *Lexer {
+	log.Println("in new")
 	l := &Lexer{input: input}
 	l.readChar()
 	return l
@@ -21,6 +23,9 @@ func New(input string) *Lexer {
 
 // TODO: for now only ASCII is supported in lexer, add support for Unicode and UTF-8
 func (l *Lexer) readChar() {
+
+	fmt.Printf("char : %v", l.ch)
+	fmt.Println()
 
 	if l.readPosition >= len(l.input) {
 		l.ch = 0
@@ -33,8 +38,8 @@ func (l *Lexer) readChar() {
 }
 
 func (l *Lexer) skipWhiteSpace() {
-	
-	for l.ch == ' ' || l.ch == '\n' || l.ch == '\t' || l.ch == '\r'{
+
+	for l.ch == ' ' || l.ch == '\n' || l.ch == '\t' || l.ch == '\r' {
 		l.readChar()
 	}
 }
@@ -44,7 +49,7 @@ func (l *Lexer) skipWhiteSpace() {
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 
-	l.skipWhiteSpace();
+	l.skipWhiteSpace()
 
 	switch l.ch {
 	case '=':
@@ -72,6 +77,10 @@ func (l *Lexer) NextToken() token.Token {
 			tok.Type = token.LookupIdentifier(tok.Literal)
 			log.Printf(" is Letter %v", tok.Literal)
 			return tok
+		} else if isDigit(l.ch) {
+			tok.Literal = l.readNumber()
+			tok.Type = token.INT
+			return tok
 		} else {
 			tok = newToken(token.ILLEGAL, l.ch)
 		}
@@ -85,6 +94,17 @@ func (l *Lexer) readIdentifier() string {
 	position := l.position
 
 	for isLetter(l.ch) {
+		l.readNumber()
+	}
+
+	return l.input[position:l.position]
+}
+
+func (l *Lexer) readNumber() string {
+
+	position := l.position
+
+	for isDigit(l.ch) {
 		l.readChar()
 	}
 
@@ -93,6 +113,10 @@ func (l *Lexer) readIdentifier() string {
 
 func isLetter(char byte) bool {
 	return 'a' <= char && char <= 'z' || 'A' <= char && char <= 'Z' || char == '_'
+}
+
+func isDigit(char byte) bool {
+	return '0' <= char && char <= '9'
 }
 
 func newToken(tokenType token.TokenType, literal byte) token.Token {

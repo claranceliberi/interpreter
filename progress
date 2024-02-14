@@ -1,10 +1,52 @@
-p14
+p19
 
-left the codebase with an logical error,
+left codebase with an error
 
-when TestNextToken in lexer_tests.go is run, initially the lexer starts from the second token
-instead of the first token
+the test are running forever until they time over, this happened after I added `readNumber` and `isDigit` functions to the codebase. 
 
-why? because the lexer is initialized with the first token in the constructor and the NextToken method is called in loop before running tests
+here is the error
 
-Fix: not yet determined
+024/02/14 11:18:28 ------------
+2024/02/14 11:18:28 in new
+char : 0
+2024/02/14 11:18:28 test 0,
+2024/02/14 11:18:28 
+panic: test timed out after 10m0s
+running tests:
+        TestNextToken (10m0s)
+
+goroutine 17 [running]:
+testing.(*M).startAlarm.func1()
+        /usr/local/go/src/testing/testing.go:2241 +0x3b9
+created by time.goFunc
+        /usr/local/go/src/time/sleep.go:176 +0x32
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc000007860, {0x112bb10?, 0x16da31b2510d3?}, 0x1134e00)
+        /usr/local/go/src/testing/testing.go:1630 +0x405
+testing.runTests.func1(0x1213dc0?)
+        /usr/local/go/src/testing/testing.go:2036 +0x45
+testing.tRunner(0xc000007860, 0xc000078c88)
+        /usr/local/go/src/testing/testing.go:1576 +0x10b
+testing.runTests(0xc00010c0a0?, {0x120b140, 0x1, 0x1}, {0x20?, 0x100c0000170d8?, 0x12135e0?})
+        /usr/local/go/src/testing/testing.go:2034 +0x489
+testing.(*M).Run(0xc00010c0a0)
+        /usr/local/go/src/testing/testing.go:1906 +0x63a
+main.main()
+        _testmain.go:47 +0x1aa
+
+goroutine 6 [runnable]:
+github.com/claranceliberi/monkey-interpreter/src/lexer.(*Lexer).readNumber(0xc00007c450)
+        /Users/claranceliberi/projects/mine/interpreter/src/lexer/lexer.go:103 +0x95
+github.com/claranceliberi/monkey-interpreter/src/lexer.(*Lexer).readIdentifier(0xc00007c450)
+        /Users/claranceliberi/projects/mine/interpreter/src/lexer/lexer.go:97 +0x2d
+github.com/claranceliberi/monkey-interpreter/src/lexer.(*Lexer).NextToken(0xc00007c450)
+        /Users/claranceliberi/projects/mine/interpreter/src/lexer/lexer.go:76 +0x193
+github.com/claranceliberi/monkey-interpreter/src/lexer.TestNextToken(0xc000007a00)
+        /Users/claranceliberi/projects/mine/interpreter/src/lexer/lexer_test.go:70 +0x15b
+testing.tRunner(0xc000007a00, 0x1134e00)
+        /usr/local/go/src/testing/testing.go:1576 +0x10b
+created by testing.(*T).Run
+        /usr/local/go/src/testing/testing.go:1629 +0x3ea
+FAIL    github.com/claranceliberi/monkey-interpreter/src/lexer  601.655s
+FAIL
