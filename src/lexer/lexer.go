@@ -1,6 +1,10 @@
 package lexer
 
-import "github.com/claranceliberi/monkey-interpreter/src/token"
+import (
+	"log"
+
+	"github.com/claranceliberi/monkey-interpreter/src/token"
+)
 
 type Lexer struct {
 	input        string
@@ -28,10 +32,19 @@ func (l *Lexer) readChar() {
 	l.readPosition += 1
 }
 
+func (l *Lexer) skipWhiteSpace() {
+	
+	for l.ch == ' ' || l.ch == '\n' || l.ch == '\t' || l.ch == '\r'{
+		l.readChar()
+	}
+}
+
 /* return the token type of the current char in lexer
  */
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
+
+	l.skipWhiteSpace();
 
 	switch l.ch {
 	case '=':
@@ -41,23 +54,45 @@ func (l *Lexer) NextToken() token.Token {
 	case '(':
 		tok = newToken(token.LPARENTHESIS, l.ch)
 	case ')':
-		tok = newToken(token.RPARENTHESIS, l.ch) 
+		tok = newToken(token.RPARENTHESIS, l.ch)
 	case ',':
-		tok = newToken(token.COMMA, l.ch) 
+		tok = newToken(token.COMMA, l.ch)
 	case '+':
-		tok = newToken(token.PLUS, l.ch) 
+		tok = newToken(token.PLUS, l.ch)
 	case '{':
 		tok = newToken(token.LBRACE, l.ch)
-		case '}':
+	case '}':
 		tok = newToken(token.RBRACE, l.ch)
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
-
+	default:
+		if isLetter(l.ch) {
+			tok.Literal = l.readIdentifier()
+			tok.Type = token.LookupIdentifier(tok.Literal)
+			log.Printf(" is Letter %v", tok.Literal)
+			return tok
+		} else {
+			tok = newToken(token.ILLEGAL, l.ch)
+		}
 	}
 
 	l.readChar()
-	return tok;
+	return tok
+}
+
+func (l *Lexer) readIdentifier() string {
+	position := l.position
+
+	for isLetter(l.ch) {
+		l.readChar()
+	}
+
+	return l.input[position:l.position]
+}
+
+func isLetter(char byte) bool {
+	return 'a' <= char && char <= 'z' || 'A' <= char && char <= 'Z' || char == '_'
 }
 
 func newToken(tokenType token.TokenType, literal byte) token.Token {
