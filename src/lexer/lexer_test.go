@@ -1,7 +1,6 @@
 package lexer
 
 import (
-	"log"
 	"testing"
 
 	"github.com/claranceliberi/monkey-interpreter/src/token"
@@ -20,7 +19,19 @@ func TestNextToken(t *testing.T) {
 		x+y;
 	};
 	
-	let result = add(five,ten);`
+	let result = add(five,ten);
+	!-/*5;
+	5 < 10 > 5;
+
+	if (5<10){
+		return true;
+	}else {
+		return false;
+	}
+
+	10 == 10;
+	10 != 9;
+	`
 
 	tests := []ExpectedToken{
 		{token.LET, "let"},
@@ -35,6 +46,7 @@ func TestNextToken(t *testing.T) {
 		{token.SEMICOLON, ";"},
 		{token.LET, "let"},
 		{token.IDENTIFIER, "add"},
+		{token.ASSIGN, "="},
 		{token.FUNCTION, "fn"},
 		{token.LPARENTHESIS, "("},
 		{token.IDENTIFIER, "x"},
@@ -45,6 +57,7 @@ func TestNextToken(t *testing.T) {
 		{token.IDENTIFIER, "x"},
 		{token.PLUS, "+"},
 		{token.IDENTIFIER, "y"},
+		{token.SEMICOLON, ";"},
 		{token.RBRACE, "}"},
 		{token.SEMICOLON, ";"},
 		{token.LET, "let"},
@@ -54,18 +67,52 @@ func TestNextToken(t *testing.T) {
 		{token.LPARENTHESIS, "("},
 		{token.IDENTIFIER, "five"},
 		{token.COMMA, ","},
-		{token.IDENTIFIER, "10"},
+		{token.IDENTIFIER, "ten"},
 		{token.RPARENTHESIS, ")"},
 		{token.SEMICOLON, ";"},
+		{token.BANG, "!"},
+		{token.MINUS, "-"},
+		{token.SLASH, "/"},
+		{token.ASTERISK, "*"},
+		{token.INT, "5"},
+		{token.SEMICOLON, ";"},
+		{token.INT, "5"},
+		{token.LT, "<"},
+		{token.INT, "10"},
+		{token.GT, ">"},
+		{token.INT, "5"},
+		{token.SEMICOLON, ";"},
+		{token.IF, "if"},
+		{token.LPARENTHESIS, "("},
+		{token.INT, "5"},
+		{token.LT, "<"},
+		{token.INT, "10"},
+		{token.RPARENTHESIS, ")"},
+		{token.LBRACE, "{"},
+		{token.RETURN, "return"},
+		{token.TRUE, "true"},
+		{token.SEMICOLON, ";"},
+		{token.RBRACE, "}"},
+		{token.ELSE, "else"},
+		{token.LBRACE, "{"},
+		{token.RETURN, "return"},
+		{token.FALSE, "false"},
+		{token.SEMICOLON, ";"},
+		{token.RBRACE, "}"},
+		{token.INT, "10"},
+		{token.EQ, "=="},
+		{token.INT, "10"},
+		{token.SEMICOLON, ";"},
+		{token.INT, "10"},
+		{token.NOT_EQ, "!="},
+		{token.INT, "9"},
+		{token.SEMICOLON, ";"},
+		{token.EOF, ""},
 	}
-
-	log.Println("------------")
 
 	_lexer := New(input)
 
 	for i, expectedToken := range tests {
-		log.Printf("test %v,", i)
-		log.Println()
 
 		token := _lexer.NextToken()
 

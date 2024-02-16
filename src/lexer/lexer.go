@@ -1,12 +1,12 @@
 package lexer
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/claranceliberi/monkey-interpreter/src/token"
 )
 
+// struct that supports reading source codew
 type Lexer struct {
 	input        string
 	position     int  // current position in input (points to the current char)
@@ -15,17 +15,14 @@ type Lexer struct {
 }
 
 func New(input string) *Lexer {
-	log.Println("in new")
 	l := &Lexer{input: input}
 	l.readChar()
 	return l
 }
 
+// reading one character at a time from input (source code)
 // TODO: for now only ASCII is supported in lexer, add support for Unicode and UTF-8
 func (l *Lexer) readChar() {
-
-	fmt.Printf("char : %v", l.ch)
-	fmt.Println()
 
 	if l.readPosition >= len(l.input) {
 		l.ch = 0
@@ -37,6 +34,18 @@ func (l *Lexer) readChar() {
 	l.readPosition += 1
 }
 
+// think of this as a method that return next character that `readChar` is going to pick
+// or as a next character following current character in `l.ch`
+func (l *Lexer) peekChar() byte {
+
+	if l.readPosition > len(l.input){
+		return 0
+	}else{
+		return l.input[l.readPosition]
+	}
+}
+
+// skips whitespaces,tabs or new lines found in source code.
 func (l *Lexer) skipWhiteSpace() {
 
 	for l.ch == ' ' || l.ch == '\n' || l.ch == '\t' || l.ch == '\r' {
@@ -44,8 +53,9 @@ func (l *Lexer) skipWhiteSpace() {
 	}
 }
 
-/* return the token type of the current char in lexer
- */
+
+
+// return the token type of the current char in lexer
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 
@@ -53,7 +63,34 @@ func (l *Lexer) NextToken() token.Token {
 
 	switch l.ch {
 	case '=':
-		tok = newToken(token.ASSIGN, l.ch)
+		if l.peekChar() == '=' {
+			l.readChar()
+			tok.Literal = "=="
+			tok.Type = token.EQ
+		}else {
+			tok = newToken(token.ASSIGN, l.ch)
+		}
+	case '+':
+		tok = newToken(token.PLUS, l.ch)
+	case '-':
+		tok = newToken(token.MINUS, l.ch) 
+	case '!':
+		if l.peekChar() == '=' {
+			l.readChar()
+			tok.Literal = "!="
+			tok.Type = token.NOT_EQ
+
+		}else {
+			tok = newToken(token.BANG, l.ch)
+		}
+	case '/':
+		tok = newToken(token.SLASH, l.ch) 
+	case '*':
+		tok = newToken(token.ASTERISK, l.ch) 
+	case '<':
+		tok = newToken(token.LT, l.ch) 
+	case '>':
+		tok = newToken(token.GT, l.ch)
 	case ';':
 		tok = newToken(token.SEMICOLON, l.ch)
 	case '(':
@@ -62,8 +99,6 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.RPARENTHESIS, l.ch)
 	case ',':
 		tok = newToken(token.COMMA, l.ch)
-	case '+':
-		tok = newToken(token.PLUS, l.ch)
 	case '{':
 		tok = newToken(token.LBRACE, l.ch)
 	case '}':
@@ -74,8 +109,8 @@ func (l *Lexer) NextToken() token.Token {
 	default:
 		if isLetter(l.ch) {
 			tok.Literal = l.readIdentifier()
+			log.Println(tok.Literal)
 			tok.Type = token.LookupIdentifier(tok.Literal)
-			log.Printf(" is Letter %v", tok.Literal)
 			return tok
 		} else if isDigit(l.ch) {
 			tok.Literal = l.readNumber()
@@ -90,16 +125,20 @@ func (l *Lexer) NextToken() token.Token {
 	return tok
 }
 
+// return the whole identifier from source code. this might be a keyword or variable name
+// ex. `let`,`fn`,`variable_name`, `foo`, `bar`
 func (l *Lexer) readIdentifier() string {
 	position := l.position
 
 	for isLetter(l.ch) {
-		l.readNumber()
+		l.readChar()
 	}
 
 	return l.input[position:l.position]
 }
 
+// read the whole number from source code
+// TODO: for now only integers are supported, in future should support all types of numbers
 func (l *Lexer) readNumber() string {
 
 	position := l.position
@@ -119,6 +158,7 @@ func isDigit(char byte) bool {
 	return '0' <= char && char <= '9'
 }
 
+// helps to form Token struct
 func newToken(tokenType token.TokenType, literal byte) token.Token {
 	return token.Token{Type: tokenType, Literal: string(literal)}
 }
